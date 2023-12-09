@@ -11,8 +11,9 @@ import (
 	"github.com/Kyagara/equinox"
 	"github.com/Kyagara/equinox/api"
 	"github.com/Kyagara/equinox/cache"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/Kyagara/equinox/ratelimit"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog"
 )
 
@@ -44,18 +45,19 @@ CREATE TABLE IF NOT EXISTS timeline (
 );`
 
 func newEquinoxClient() (*equinox.Equinox, error) {
-	config := &api.EquinoxConfig{
+	config := api.EquinoxConfig{
 		HTTPClient: &http.Client{Timeout: 15 * time.Second},
-		Cache:      &cache.Cache{TTL: 0},
+		Cache:      &cache.Cache{},
 		Key:        os.Getenv("EQUINOX_KEY"),
-		Retries:    1,
+		Retries:    3,
 		LogLevel:   zerolog.WarnLevel,
+		RateLimit:  ratelimit.NewInternalRateLimit(),
 	}
 	return equinox.NewClientWithConfig(config)
 }
 
 func newDBConnection(ctx context.Context) (*pgxpool.Pool, error) {
-	db, err := pgxpool.Connect(ctx, os.Getenv("DATABASE_URL"))
+	db, err := pgxpool.New(ctx, os.Getenv("DATABASE_URL"))
 	if err != nil {
 		return nil, err
 	}
