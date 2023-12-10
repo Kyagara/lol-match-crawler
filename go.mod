@@ -3,7 +3,7 @@ module lol-match-crawler
 go 1.21
 
 require (
-	github.com/Kyagara/equinox v0.19.4
+	github.com/Kyagara/equinox v0.19.5
 	github.com/jackc/pgx/v5 v5.5.1
 	github.com/rs/zerolog v1.31.0
 )
