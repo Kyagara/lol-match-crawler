@@ -14,6 +14,7 @@ import (
 	"github.com/Kyagara/equinox/ratelimit"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rs/zerolog"
 )
 
 const schema = `
@@ -49,8 +50,12 @@ func newEquinoxClient() *equinox.Equinox {
 		Cache:      &cache.Cache{},
 		Key:        os.Getenv("EQUINOX_KEY"),
 		Retry:      equinox.DefaultRetry(),
-		Logger:     equinox.DefaultLogger(),
-		RateLimit:  ratelimit.NewInternalRateLimit(0.99, time.Second),
+		Logger: api.Logger{
+			Level:           zerolog.WarnLevel,
+			Pretty:          true,
+			EnableTimestamp: true,
+		},
+		RateLimit: ratelimit.NewInternalRateLimit(0.99, time.Second),
 	}
 	return equinox.NewClientWithConfig(config)
 }
