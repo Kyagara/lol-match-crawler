@@ -14,7 +14,6 @@ import (
 	"github.com/Kyagara/equinox/ratelimit"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rs/zerolog"
 )
 
 const schema = `
@@ -44,14 +43,14 @@ CREATE TABLE IF NOT EXISTS timeline (
 	FOREIGN KEY (id) REFERENCES match(id)
 );`
 
-func newEquinoxClient() (*equinox.Equinox, error) {
+func newEquinoxClient() *equinox.Equinox {
 	config := api.EquinoxConfig{
 		HTTPClient: &http.Client{Timeout: 15 * time.Second},
 		Cache:      &cache.Cache{},
 		Key:        os.Getenv("EQUINOX_KEY"),
-		Retries:    3,
-		LogLevel:   zerolog.WarnLevel,
-		RateLimit:  ratelimit.NewInternalRateLimit(),
+		Retry:      equinox.DefaultRetry(),
+		Logger:     equinox.DefaultLogger(),
+		RateLimit:  ratelimit.NewInternalRateLimit(0.99, time.Second),
 	}
 	return equinox.NewClientWithConfig(config)
 }

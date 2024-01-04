@@ -21,11 +21,7 @@ func main() {
 	}
 	defer db.Close()
 
-	client, err := newEquinoxClient()
-	if err != nil {
-		log.Error().Err(err).Msg("Error creating equinox client")
-		return
-	}
+	client := newEquinoxClient()
 
 	ctxWithCancel, cancel := context.WithCancel(ctx)
 	stop := make(chan os.Signal, 1)
