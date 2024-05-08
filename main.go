@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/Kyagara/equinox/clients/lol"
+	"github.com/Kyagara/equinox/v2/clients/lol"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -21,7 +21,10 @@ func main() {
 	}
 	defer db.Close()
 
-	client := newEquinoxClient()
+	client, err := newEquinoxClient()
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error creating equinox client")
+	}
 
 	ctxWithCancel, cancel := context.WithCancel(ctx)
 	stop := make(chan os.Signal, 1)

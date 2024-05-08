@@ -1,6 +1,6 @@
 # lol-match-crawler
 
-This is a very simple crawler for League of Legends matches purely for testing [equinox](https://github.com/Kyagara/equinox).
+This is a very simple crawler for League of Legends matches purely for testing [equinox](https://github.com/Kyagara/equinox/v2).
 
 ## Usage
 

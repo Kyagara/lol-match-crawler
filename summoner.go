@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
-	"github.com/Kyagara/equinox"
-	"github.com/Kyagara/equinox/clients/lol"
+	"github.com/Kyagara/equinox/v2"
+	"github.com/Kyagara/equinox/v2/clients/lol"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
 )
@@ -20,15 +20,15 @@ func fetchSummoners(ctx context.Context, client *equinox.Equinox, db *pgxpool.Po
 
 		summoner, err := client.LOL.SummonerV4.BySummonerID(ctx, lol.KR, entry.SummonerID)
 		if err != nil {
-			log.Error().Err(err).Str("name", entry.SummonerName).Msg("Error getting summoner")
+			log.Error().Err(err).Str("summonerID", entry.SummonerID).Msg("Error getting summoner")
 			continue
 		}
 
 		_, err = db.Exec(ctx, "INSERT INTO summoner (id, puuid, entry, summoner) VALUES ($1, $2, $3, $4);", entry.SummonerID, summoner.PUUID, entry, summoner)
 		if err != nil {
-			log.Error().Err(err).Str("name", entry.SummonerName).Msg("Error inserting summoner")
+			log.Error().Err(err).Str("summonerID", entry.SummonerID).Msg("Error inserting summoner")
 		}
 
-		log.Info().Str("name", entry.SummonerName).Msg("New summoner")
+		log.Info().Str("summonerID", entry.SummonerID).Msg("New summoner")
 	}
 }

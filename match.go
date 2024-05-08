@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 
-	"github.com/Kyagara/equinox"
-	"github.com/Kyagara/equinox/api"
-	"github.com/Kyagara/equinox/clients/lol"
+	"github.com/Kyagara/equinox/v2"
+	"github.com/Kyagara/equinox/v2/api"
+	"github.com/Kyagara/equinox/v2/clients/lol"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
 )
@@ -31,7 +31,7 @@ func fetchMatches(ctx context.Context, client *equinox.Equinox, db *pgxpool.Pool
 
 		list, err := client.LOL.MatchV5.ListByPUUID(ctx, api.ASIA, summoner.PUUID, -1, -1, 420, "ranked", -1, 5)
 		if err != nil {
-			log.Error().Str("name", summoner.Name).Err(err).Msg("Error getting match list")
+			log.Error().Str("puuid", summoner.PUUID).Err(err).Msg("Error getting match list")
 			continue
 		}
 

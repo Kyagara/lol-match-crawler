@@ -3,15 +3,13 @@ package main
 import (
 	"context"
 	"errors"
-	"net/http"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/Kyagara/equinox"
-	"github.com/Kyagara/equinox/api"
-	"github.com/Kyagara/equinox/cache"
-	"github.com/Kyagara/equinox/ratelimit"
+	"github.com/Kyagara/equinox/v2"
+	"github.com/Kyagara/equinox/v2/api"
+	"github.com/Kyagara/equinox/v2/ratelimit"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog"
@@ -44,20 +42,17 @@ CREATE TABLE IF NOT EXISTS timeline (
 	FOREIGN KEY (id) REFERENCES match(id)
 );`
 
-func newEquinoxClient() *equinox.Equinox {
+func newEquinoxClient() (*equinox.Equinox, error) {
 	config := api.EquinoxConfig{
-		HTTPClient: &http.Client{Timeout: 15 * time.Second},
-		Cache:      &cache.Cache{},
-		Key:        os.Getenv("EQUINOX_KEY"),
-		Retry:      equinox.DefaultRetry(),
+		Key:   os.Getenv("EQUINOX_KEY"),
+		Retry: equinox.DefaultRetry(),
 		Logger: api.Logger{
 			Level:           zerolog.WarnLevel,
 			Pretty:          true,
 			EnableTimestamp: true,
 		},
-		RateLimit: ratelimit.NewInternalRateLimit(0.99, time.Second),
 	}
-	return equinox.NewClientWithConfig(config)
+	return equinox.NewCustomClient(config, nil, nil, ratelimit.NewInternalRateLimit(0.99, time.Second))
 }
 
 func newDBConnection(ctx context.Context) (*pgxpool.Pool, error) {
